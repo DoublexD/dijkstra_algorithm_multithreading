@@ -6,7 +6,6 @@
 #include <set>
 #include <chrono>
 #include <vector>
-#include <limits>
 #include <string>
 
 // README
@@ -99,7 +98,6 @@ void display_graph(const Graph &graph) {
                   << ", Waga/przepustowosc: " << edge.weight << "\n";
     }
 
-    // Wyswietlanie grafu macierzowego
     std::cout << "\nGraf macierzowy:\n";
     for (const auto &row : graph.matrix) {
         for (const auto &weight : row) {
@@ -108,17 +106,6 @@ void display_graph(const Graph &graph) {
         std::cout << "\n";
     }
 
-    // Wyswietlanie grafu listowego
-    std::cout << "\nGraf listowy:\n";
-    for (int i = 0; i < graph.V; ++i) {
-        std::cout << "Wierzcholek " << i << ": ";
-        for (const auto &edge : graph.edges) {
-            if (edge.beginning == i) {
-                std::cout << "(" << edge.end << ", " << edge.weight << ") ";
-            }
-        }
-        std::cout << "\n";
-    }
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
 
@@ -147,149 +134,97 @@ void save_graph(const Graph &graph, const std::string &filename) {
     std::cout << "Operacja trwala: " << elapsed.count() << " mikrosekund.\n";
 }
 
-// Funkcja wykonujaca algorytm Dijkstry dla reprezentacji macierzowej
-void dijkstry_matrix(const Graph &graph, int start_vertex, int end_vertex) {
+// Algorytm Dijkstry
+void dijkstra_matrix(const Graph &graph, int start_vertex, int end_vertex) {
     auto begin = std::chrono::high_resolution_clock::now();
+
     int V = graph.V;
     std::vector<int> dist(V, INT_MAX);
     std::vector<bool> visited(V, false);
 
     dist[start_vertex] = 0;
 
-    for (int count = 0; count < V - 1; ++count) {
-        int min_dist = INT_MAX;
-        int min_vertex = -1;
+    for (int i = 0; i < V - 1; ++i) {
+        int min_dist = INT_MAX, min_vertex = -1;
 
         for (int v = 0; v < V; ++v) {
-            if (!visited[v] && dist[v] <= min_dist) {
+            if (!visited[v] && dist[v] < min_dist) {
                 min_dist = dist[v];
                 min_vertex = v;
             }
         }
 
-        if (min_vertex == -1)
-            break;
+        if (min_vertex == -1) break;
 
         visited[min_vertex] = true;
 
         for (int v = 0; v < V; ++v) {
-            if (!visited[v] && graph.matrix[min_vertex][v] != 0 && dist[min_vertex] != INT_MAX &&
+            if (!visited[v] && graph.matrix[min_vertex][v] &&
                 dist[min_vertex] + graph.matrix[min_vertex][v] < dist[v]) {
                 dist[v] = dist[min_vertex] + graph.matrix[min_vertex][v];
             }
         }
     }
 
-    std::cout << "W reprezentacji macierzowej najkrotsza odleglosc z wierzcholka " << start_vertex << " do "
-              << end_vertex << " wynosi: " << dist[end_vertex] << "\n";
+    std::cout << "Najkrotsza odleglosc z " << start_vertex << " do " << end_vertex << " wynosi: "
+              << dist[end_vertex] << "\n";
 
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
 
-    std::cout << "Operacja trwala: " << elapsed.count() << " mikrosekund.\n";
-}
-
-// Funkcja wykonujaca algorytm Dijkstry dla reprezentacji listowej
-void dijkstry_list(const Graph &graph, int start_vertex, int end_vertex) {
-    auto begin = std::chrono::high_resolution_clock::now();
-    int V = graph.V;
-    std::set<std::pair<int, int>> vertices_to_visit;
-    std::vector<int> dist(V, INT_MAX);
-
-    dist[start_vertex] = 0;
-
-    vertices_to_visit.insert({0, start_vertex});
-
-    while (!vertices_to_visit.empty()) {
-        int current_vertex = vertices_to_visit.begin()->second;
-        vertices_to_visit.erase(vertices_to_visit.begin());
-
-        for (const auto &edge : graph.edges) {
-            if (edge.beginning == current_vertex) {
-                int neighbor = edge.end;
-                int weight = edge.weight;
-
-                if (dist[current_vertex] != INT_MAX && dist[current_vertex] + weight < dist[neighbor]) {
-                    vertices_to_visit.erase({dist[neighbor], neighbor});
-                    dist[neighbor] = dist[current_vertex] + weight;
-                    vertices_to_visit.insert({dist[neighbor], neighbor});
-                }
-            }
-        }
-    }
-
-    std::cout << "W reprezentacji listowej najkrotsza odleglosc z wierzcholka " << start_vertex << " do "
-              << end_vertex << " wynosi: " << dist[end_vertex] << "\n";
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-
-    std::cout << "Operacja trwala: " << elapsed.count() << " mikrosekund.\n";
+    std::cout << "Czas wykonania: " << elapsed.count() << " mikrosekund.\n";
 }
 
 int main() {
     Graph myGraph;
     int choice;
+
     while (true) {
         std::cout << "==================================\n";
         std::cout << "               MENU               \n";
         std::cout << "==================================\n";
         std::cout << "1. Wczytaj graf z pliku tekstowego\n";
         std::cout << "2. Generowanie losowego grafu\n";
-        std::cout << "3. Wyswietlanie grafu (macierzowo oraz listowo)\n";
-        std::cout << "4. Zapisz graf do pliku\n";
-        std::cout << "5. Uruchom algorytm Dijkstry dla wczytanego/wygenerowanego grafu\n";
-        std::cout << "6. Zakoncz program\n";
-        std::cout << "==================================\n";
+        std::cout << "3. Wyswietlenie grafu\n";
+        std::cout << "4. Zapisanie grafu do pliku\n";
+        std::cout << "5. Algorytm Dijkstry\n";
+        std::cout << "6. Wyjście\n";
         std::cin >> choice;
 
         switch (choice) {
             case 1:
-                std::cout << "Wybrano wczytanie grafu z pliku tekstowego\n";
-                std::cout << "Wpisz nazwe pliku (z rozszerzeniem '.txt')\n";
+                std::cout << "Podaj nazwę pliku: ";
                 std::cin >> filename;
                 load_graph_from_file(filename, myGraph);
-                std::cout << "Graf zostal wczytany pomyslnie\n";
                 break;
-
             case 2:
-                int density, vertice;
-                std::cout << "Wybrano generowanie losowego grafu\n";
-                std::cout << "Wpisz gestosc grafu (wystarczy sama liczba, nie trzeba pisac znaku '%')\n";
+                int density, vertices;
+                std::cout << "Podaj gęstość grafu (%): ";
                 std::cin >> density;
-                std::cout << "Wpisz liczbe wierzcholkow grafu\n";
-                std::cin >> vertice;
-                generate_random_graph(myGraph, density, vertice);
-                std::cout << "Graf zostal wygenerowany pomyslnie\n";
+                std::cout << "Podaj liczbę wierzchołków: ";
+                std::cin >> vertices;
+                generate_random_graph(myGraph, density, vertices);
                 break;
-
             case 3:
-                std::cout << "Wybrano wyswietlenie grafu\n";
                 display_graph(myGraph);
                 break;
-
             case 4:
-                std::cout << "Wybrano zapisanie grafu do pliku\n";
-                std::cout << "Napisz nazwe pliku (z rozszerzeniem '.txt')\n";
+                std::cout << "Podaj nazwę pliku do zapisu: ";
                 std::cin >> filename;
                 save_graph(myGraph, filename);
                 break;
-
             case 5:
-                int first_vertice, last_vertice;
-                std::cout << "Wybrano uruchomienie algorytmu Dijkstry (listowo/macierzowo)\n";
-                std::cout << "Podaj wierzcholek poczatkowy\n";
-                std::cin >> first_vertice;
-                std::cout << "Podaj wierzcholek koncowy\n";
-                std::cin >> last_vertice;
-                dijkstry_matrix(myGraph, first_vertice, last_vertice);
-                dijkstry_list(myGraph, first_vertice, last_vertice);
+                int start, end;
+                std::cout << "Podaj wierzchołek początkowy: ";
+                std::cin >> start;
+                std::cout << "Podaj wierzchołek końcowy: ";
+                std::cin >> end;
+                dijkstra_matrix(myGraph, start, end);
                 break;
-
             case 6:
                 return 0;
-
             default:
-                std::cout << "Nieprawidlowy wybor. Sprobuj ponownie.\n";
+                std::cout << "Nieprawidłowy wybór, spróbuj ponownie.\n";
         }
     }
 }

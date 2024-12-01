@@ -1,0 +1,94 @@
+START TEST ORG:
+
+g++ -std=c++11 test_org.cpp -o test_org
+./test_org
+
+START TEST:
+
+g++ -std=c++11 -pthread -o test test.cpp
+./test
+
+
+
+
+testy w zaleznosci od ilosci wierzcholkow:
+
+
+test:
+
+10k:
+
+Podaj wierzchołek początkowy: 1
+Podaj wierzchołek końcowy: 9999
+Najkrótsza odległość z wierzchołka 1 do 9999 wynosi: 3
+Operacja trwała: 1870341 mikrosekund.
+
+30k:
+
+Podaj wierzchołek początkowy: 1
+Podaj wierzchołek końcowy: 29999
+Najkrótsza odległość z wierzchołka 1 do 29999 wynosi: 3
+Operacja trwała: 10510840 mikrosekund.
+
+60k:
+
+Podaj wierzchołek początkowy: 1
+Podaj wierzchołek końcowy: 59999
+Najkrótsza odległość z wierzchołka 1 do 59999 wynosi: 5
+Operacja trwała: 32411284 mikrosekund.
+
+test_org:
+
+10k:
+
+Podaj wierzchołek początkowy: 1
+Podaj wierzchołek końcowy: 9999
+Najkrotsza odleglosc z 1 do 9999 wynosi: 3
+Czas wykonania: 1790795 mikrosekund.
+
+30k:
+
+Podaj wierzchołek początkowy: 1
+Podaj wierzchołek końcowy: 29999
+Najkrotsza odleglosc z 1 do 29999 wynosi: 3
+Czas wykonania: 18981217 mikrosekund.
+
+60k:
+
+Podaj wierzchołek początkowy: 1
+Podaj wierzchołek końcowy: 59999
+Najkrotsza odleglosc z 1 do 59999 wynosi: 5
+Czas wykonania: 78249286 mikrosekund.
+
+
+
+
+PONOWNY TEST:
+
+
+60k AGAIN:
+
+
+
+test:
+
+Podaj nazwę pliku: 60k.txt
+Operacja trwała: 37331657 mikrosekund.
+
+Podaj wierzchołek początkowy: 1
+Podaj wierzchołek końcowy: 59999
+Najkrótsza odległość z wierzchołka 1 do 59999 wynosi: 5
+Operacja trwała: 32915162 mikrosekund.
+
+
+
+
+test_org:
+
+Podaj nazwę pliku: 60k.txt
+Operacja trwala: 37662785 mikrosekund.
+
+Podaj wierzchołek początkowy: 1
+Podaj wierzchołek końcowy: 59999
+Najkrotsza odleglosc z 1 do 59999 wynosi: 5
+Czas wykonania: 80332013 mikrosekund.
