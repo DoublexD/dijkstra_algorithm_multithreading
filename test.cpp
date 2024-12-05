@@ -152,7 +152,7 @@ void dijkstra_matrix_multithreaded(const Graph &graph, int start_vertex, int end
     dist[start_vertex] = 0;
 
     std::mutex mtx; // Mutex do synchronizacji
-    int num_threads = std::min(std::thread::hardware_concurrency(), 8u);
+    int num_threads = std::min(std::thread::hardware_concurrency(), 4u);
 
     for (int count = 0; count < V - 1; ++count) {
         int min_vertex = -1;
